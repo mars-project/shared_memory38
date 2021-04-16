@@ -29,8 +29,7 @@ else
     conda create --quiet --yes -n wheel python=$PYTHON
     conda activate wheel
 
-    pip install -r requirements-wheel.txt
-    CFLAGS=-Wno-error pip wheel --no-deps .
+    pip wheel --no-deps .
 
     conda activate test
 

@@ -28,7 +28,6 @@ jobs:
       shell: bash
       run: |
         source ./.github/workflows/reload-env.sh
-        if [ $UNAME == "darwin" ]; then export CC="gcc-10"; fi
         python setup.py build_ext -i
 
     - name: Test with unittest
