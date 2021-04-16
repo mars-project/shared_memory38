@@ -1,0 +1,40 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# sqlite3 db files
+*.db
+
+# Packages
+*.egg
+*.egg-info
+dist
+build/
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+lib64
+__pycache__
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+htmlcov
+.tox
+nosetests.xml
+.cache
+.pytest*
+.dist-coverage
+test.conf
+
+# IDEs
+.idea
+.vscode
+*.iml
+
+# Generated files
+clinic/*.h

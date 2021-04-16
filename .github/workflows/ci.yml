@@ -1,0 +1,45 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        python-version: [3.6, 3.7]
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: Set up conda ${{ matrix.python-version }}
+      env:
+        PYTHON: ${{ matrix.python-version }}
+      shell: bash
+      run: |
+        source ./.github/workflows/install-conda.sh
+        python -m pip install --upgrade pip setuptools wheel coverage;
+
+    - name: Build extensions
+      shell: bash
+      run: |
+        source ./.github/workflows/reload-env.sh
+        python setup.py build_ext -i
+
+    - name: Test with unittest
+      env:
+        WITH_HADOOP: ${{ matrix.with-hadoop }}
+        WITH_KUBERNETES: ${{ matrix.with-kubernetes }}
+        WITH_CYTHON: ${{ matrix.with-cython }}
+        NO_COMMON_TESTS: ${{ matrix.no-common-tests }}
+        NUMPY_EXPERIMENTAL_ARRAY_FUNCTION: 1
+        CHANGE_MINIKUBE_NONE_USER: true
+      shell: bash
+      run: |
+        source ./.github/workflows/reload-env.sh
+        python -m unittest shared_memory.tests.test_shared_memory
