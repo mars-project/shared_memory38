@@ -21,6 +21,10 @@ fi
 
 export PYTHON=$(python -c "import sys; print('.'.join(str(v) for v in sys.version_info[:3]))")
 
+if [ $UNAME == "darwin" ]; then
+  export CC="gcc-10"
+fi
+
 function retry {
   retrial=5
   if [ $1 == "-n" ]; then

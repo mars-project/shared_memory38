@@ -28,7 +28,6 @@ jobs:
         shell: bash
         run: |
           source ./.github/workflows/install-conda.sh
-          python -m pip install --upgrade pip setuptools wheel coverage;
 
       - name: Deploy packages
         if: startsWith(github.ref, 'refs/tags/') && matrix.no-deploy != '1'

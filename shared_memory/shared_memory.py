@@ -16,6 +16,7 @@ import secrets
 
 if os.name == "nt":
     import _winapi
+    from . import _winshmem
     _USE_POSIX = False
 else:
     from . import _posixshmem
@@ -124,10 +125,10 @@ class SharedMemory:
                     temp_name = _make_filename() if name is None else name
                     # Create and reserve shared memory block with this name
                     # until it can be attached to by mmap.
-                    h_map = _winapi.CreateFileMapping(
-                        _winapi.INVALID_HANDLE_VALUE,
+                    h_map = _winshmem.CreateFileMapping(
+                        _winshmem.INVALID_HANDLE_VALUE,
                         _winapi.NULL,
-                        _winapi.PAGE_READWRITE,
+                        _winshmem.PAGE_READWRITE,
                         (size >> 32) & 0xFFFFFFFF,
                         size & 0xFFFFFFFF,
                         temp_name
@@ -154,22 +155,22 @@ class SharedMemory:
                 self._name = name
                 # Dynamically determine the existing named shared memory
                 # block's size which is likely a multiple of mmap.PAGESIZE.
-                h_map = _winapi.OpenFileMapping(
-                    _winapi.FILE_MAP_READ,
+                h_map = _winshmem.OpenFileMapping(
+                    _winshmem.FILE_MAP_READ,
                     False,
                     name
                 )
                 try:
-                    p_buf = _winapi.MapViewOfFile(
+                    p_buf = _winshmem.MapViewOfFile(
                         h_map,
-                        _winapi.FILE_MAP_READ,
+                        _winshmem.FILE_MAP_READ,
                         0,
                         0,
                         0
                     )
                 finally:
                     _winapi.CloseHandle(h_map)
-                size = _winapi.VirtualQuerySize(p_buf)
+                size = _winshmem.VirtualQuerySize(p_buf)
                 self._mmap = mmap.mmap(-1, size, tagname=name)
 
         self._size = size
