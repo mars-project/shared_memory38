@@ -11,6 +11,7 @@ import unittest
 import warnings
 from shared_memory.shared_memory import _USE_POSIX
 
+
 def strip_python_stderr(stderr):
     """Strip the stderr of a Python process from potential debug output
     emitted by the interpreter.
