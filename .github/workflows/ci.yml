@@ -23,12 +23,12 @@ jobs:
       shell: bash
       run: |
         source ./.github/workflows/install-conda.sh
-        python -m pip install --upgrade pip setuptools wheel coverage;
 
     - name: Build extensions
       shell: bash
       run: |
         source ./.github/workflows/reload-env.sh
+        if [ $UNAME == "darwin" ]; then export CC="gcc-10"; fi
         python setup.py build_ext -i
 
     - name: Test with unittest

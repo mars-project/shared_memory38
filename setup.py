@@ -21,7 +21,7 @@ posix_shm_mod = Extension(
     define_macros=[
         ("HAVE_SHM_OPEN", "1"),
         ("HAVE_SHM_UNLINK", "1"),
-        ("HAVE_SHM_MMAN_H", 1),
+        ("HAVE_SHM_MMAN_H", "1"),
     ],
     libraries=["rt"] if sys.platform == 'linux' else [],
     sources=["shared_memory/posixshmem.c"],

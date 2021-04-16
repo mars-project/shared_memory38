@@ -37,4 +37,4 @@ test.conf
 *.iml
 
 # Generated files
-clinic/*.h
+**/clinic/*.h
