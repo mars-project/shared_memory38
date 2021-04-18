@@ -4,4 +4,4 @@ try:
 except ImportError:
     pass
 
-__version__ = '0.1.0'
+from ._version import __version__
