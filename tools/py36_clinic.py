@@ -2621,6 +2621,21 @@ class Py_ssize_t_converter(CConverter):
     format_unit = 'n'
     c_ignored_default = "0"
 
+class size_t_converter(CConverter):
+    type = 'size_t'
+    converter = '_PyLong_Size_t_Converter'
+    c_ignored_default = "0"
+
+    def parse_arg(self, argname, displayname):
+        if self.format_unit == 'n':
+            return """
+                {paramname} = PyNumber_AsSsize_t({argname}, PyExc_OverflowError);
+                if ({paramname} == -1 && PyErr_Occurred()) {{{{
+                    goto exit;
+                }}}}
+                """.format(argname=argname, paramname=self.name)
+        return super().parse_arg(argname, displayname)
+
 
 class float_converter(CConverter):
     type = 'float'

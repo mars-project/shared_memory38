@@ -2673,6 +2673,21 @@ class slice_index_converter(CConverter):
         else:
             fail("slice_index_converter: illegal 'accept' argument " + repr(accept))
 
+class size_t_converter(CConverter):
+    type = 'size_t'
+    converter = '_PyLong_Size_t_Converter'
+    c_ignored_default = "0"
+
+    def parse_arg(self, argname, displayname):
+        if self.format_unit == 'n':
+            return """
+                {paramname} = PyNumber_AsSsize_t({argname}, PyExc_OverflowError);
+                if ({paramname} == -1 && PyErr_Occurred()) {{{{
+                    goto exit;
+                }}}}
+                """.format(argname=argname, paramname=self.name)
+        return super().parse_arg(argname, displayname)
+
 
 class float_converter(CConverter):
     type = 'float'
