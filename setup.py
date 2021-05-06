@@ -52,7 +52,9 @@ setup(
     long_description=open(os.path.join(repo_root, "README.rst"),
                           encoding="utf-8").read(),
     long_description_content_type="text/x-rst",
+    license="PSF license",
     classifiers=[
+        "License :: OSI Approved :: Python Software Foundation License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
