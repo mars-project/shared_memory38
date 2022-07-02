@@ -1,3 +1,4 @@
 include shared_memory/posixshmem.c shared_memory/winshmem.c
 global-exclude clinic
 include tools/*
+include LICENSE
