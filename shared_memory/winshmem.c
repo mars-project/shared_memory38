@@ -241,6 +241,29 @@ _winshmem_VirtualQuerySize_impl(PyObject *module, LPCVOID address)
     return region_size;
 }
 
+/*[clinic input]
+_winshmem.UnmapViewOfFile
+    address: LPCVOID
+    /
+[clinic start generated code]*/
+
+static PyObject *
+_winshmem_UnmapViewOfFile_impl(PyObject *module, LPCVOID address)
+/*[clinic end generated code: output=0c5e521bc21e44f6 input=094db9950e24bbbe]*/
+{
+    BOOL success;
+
+    Py_BEGIN_ALLOW_THREADS
+    success = UnmapViewOfFile(address);
+    Py_END_ALLOW_THREADS
+
+    if (!success) {
+        return PyErr_SetFromWindowsErr(0);
+    }
+
+    Py_RETURN_NONE;
+}
+
 #include "clinic/winshmem.c.h"
 
 static PyMethodDef module_methods[ ] = {
@@ -248,6 +271,7 @@ static PyMethodDef module_methods[ ] = {
     _WINSHMEM_MAPVIEWOFFILE_METHODDEF
     _WINSHMEM_OPENFILEMAPPING_METHODDEF
     _WINSHMEM_VIRTUALQUERYSIZE_METHODDEF
+    _WINSHMEM_UNMAPVIEWOFFILE_METHODDEF
     {NULL} /* Sentinel */
 };
 
