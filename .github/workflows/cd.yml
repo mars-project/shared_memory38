@@ -28,6 +28,9 @@ jobs:
         shell: bash
         run: |
           source ./.github/workflows/install-conda.sh
+          if [[ `uname` == "Darwin" ]]; then
+            brew reinstall gcc@10
+          fi
 
       - name: Deploy packages
         if: startsWith(github.ref, 'refs/tags/') && matrix.no-deploy != '1'
