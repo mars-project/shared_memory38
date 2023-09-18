@@ -28,6 +28,7 @@ posix_shm_mod = Extension(
     ],
     libraries=["rt"] if sys.platform == 'linux' else [],
     sources=["shared_memory/posixshmem.c"],
+    extra_compile_args=["-Wno-implicit-function-declaration"],
 )
 win_shm_mod = Extension(
     "shared_memory._winshmem",
