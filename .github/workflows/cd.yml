@@ -39,7 +39,8 @@ jobs:
           DOCKER_IMAGE: "quay.io/pypa/manylinux1_x86_64"
           PYABI: ${{ matrix.python-abis }}
           BUILD_STATIC: ${{ matrix.build-static }}
-          PYPI_PWD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USER }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           source ./.github/workflows/reload-env.sh
           source ./.github/workflows/upload-packages.sh
