@@ -63,8 +63,6 @@ else
   echo "    pypi"               >> ~/.pypirc
   echo "[pypi]"                 >> ~/.pypirc
   echo "repository=$PYPI_REPO"  >> ~/.pypirc
-  echo "username=pyodps"        >> ~/.pypirc
-  echo "password=$PYPI_PWD"     >> ~/.pypirc
 
   python -m pip install twine
   python -m twine upload -r pypi --skip-existing dist/*
