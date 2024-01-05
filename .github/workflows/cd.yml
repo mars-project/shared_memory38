@@ -11,36 +11,61 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.6, 3.7]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [auto]
         include:
-          - { os: ubuntu-latest, python-version: 3.6, python-abis: "cp36-cp36m" }
-          - { os: ubuntu-latest, python-version: 3.7, python-abis: "cp37-cp37m" }
-          - { os: windows-latest, python-version: 3.7, build-static: 1 }
+          - os: ubuntu-latest
+            arch: aarch64
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up conda ${{ matrix.python-version }}
-        env:
-          PYTHON: ${{ matrix.python-version }}
-        shell: bash
-        run: |
-          source ./.github/workflows/install-conda.sh
-          if [[ `uname` == "Darwin" ]]; then
-            brew reinstall gcc@10
-          fi
+      - name: Set up QEMU
+        if: ${{ matrix.arch == 'aarch64' }}
+        uses: docker/setup-qemu-action@v1
 
-      - name: Deploy packages
-        if: startsWith(github.ref, 'refs/tags/') && matrix.no-deploy != '1'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v1.11.1
+        env:
+          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_SKIP: pp* *-musllinux* *i686 cp27-* cp35-* cp38-* cp39-* cp310-* cp311-*
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux1
+          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux2014
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        with:
+          python-version: '3.7'
+
+      - name: Build source
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.arch == 'auto' }}
+        run: |
+          python setup.py sdist --formats=gztar --dist-dir=./wheelhouse
+
+      - name: Release to pypi
         shell: bash
         env:
-          DOCKER_IMAGE: "quay.io/pypa/manylinux1_x86_64"
-          PYABI: ${{ matrix.python-abis }}
-          BUILD_STATIC: ${{ matrix.build-static }}
           TWINE_USERNAME: ${{ secrets.PYPI_USER }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          source ./.github/workflows/reload-env.sh
-          source ./.github/workflows/upload-packages.sh
+          if [[ "$GITHUB_REPOSITORY" == "mars-project/shared_memory38" ]]; then
+            PYPI_REPO="https://upload.pypi.org/legacy/"
+          else
+            PYPI_REPO="https://test.pypi.org/legacy/"
+          fi
+          echo "[distutils]"             > ~/.pypirc
+          echo "index-servers ="        >> ~/.pypirc
+          echo "    pypi"               >> ~/.pypirc
+          echo "[pypi]"                 >> ~/.pypirc
+          echo "repository=$PYPI_REPO"  >> ~/.pypirc
+          python -m pip install twine
+          python -m twine upload -r pypi --skip-existing wheelhouse/*
+
+      - name: Upload artifacts to github
+        uses: actions/upload-artifact@v1
+        if: ${{ always() }}
+        with:
+          name: wheels
+          path: ./wheelhouse
